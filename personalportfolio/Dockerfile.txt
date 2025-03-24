@@ -10,7 +10,7 @@ COPY . .
 RUN mvn clean package -DskipTests
 
 # Run phase: Use lightweight JDK image to run the JAR
-FROM openjdk:17-jdk-slim
+FROM openjdk:21-jdk-slim
 
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
