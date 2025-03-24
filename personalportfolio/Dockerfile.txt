@@ -1,5 +1,4 @@
-# Use Maven image with Java 21 pre-installed
-FROM maven:3.9.1-eclipse-temurin-21 AS build
+
 
 # Set the working directory
 WORKDIR /app
@@ -11,7 +10,7 @@ COPY . .
 RUN mvn clean package -DskipTests
 
 # Run phase: Use lightweight JDK image to run the JAR
-FROM openjdk:21-jdk-slim
+FROM openjdk:17-jdk-slim
 
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
