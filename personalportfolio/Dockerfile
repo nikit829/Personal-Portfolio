@@ -1,21 +1,27 @@
 # Build stage
 FROM maven:3.9.6-eclipse-temurin-21 AS build
 
-# Set the working directory
+# Set working directory
 WORKDIR /app
 
-# Copy the project files
+# Copy pom.xml and download dependencies (better layer caching)
+COPY pom.xml .
+RUN mvn dependency:go-offline
+
+# Copy the rest of the source code
 COPY . .
 
-# Build the project with Maven and Java 21
+# Build the project
 RUN mvn clean package -DskipTests
 
-# Run phase: Use lightweight JDK image to run the JAR
+# Run stage
 FROM openjdk:21-jdk-slim
 
 WORKDIR /app
+
+# Copy the jar file from the build stage
 COPY --from=build /app/target/*.jar app.jar
 
-# Expose the port and run the Spring Boot app
+# Expose port and run the app
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
